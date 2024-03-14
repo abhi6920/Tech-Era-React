@@ -1,15 +1,21 @@
-import {Link, withRouter} from 'react-router-dom'
-import {NavHeader, WebsiteLogo} from './styledComponents'
+import {Component} from 'react'
+import {Link} from 'react-router-dom'
+import './index.css'
 
-const Header = () => (
-  <NavHeader>
-    <Link to="/">
-      <WebsiteLogo
-        src="https://assets.ccbp.in/frontend/react-js/tech-era/website-logo-img.png"
-        alt="website logo"
-      />
-    </Link>
-  </NavHeader>
-)
-
-export default withRouter(Header)
+export default class Header extends Component {
+  render() {
+    return (
+      <div className="header">
+        <div>
+          <Link to="/">
+            <img
+              className="headerLogo"
+              src="https://assets.ccbp.in/frontend/react-js/tech-era/website-logo-img.png"
+              alt="website logo"
+            />
+          </Link>
+        </div>
+      </div>
+    )
+  }
+}

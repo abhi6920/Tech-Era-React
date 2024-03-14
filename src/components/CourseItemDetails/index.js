@@ -1,32 +1,36 @@
 import {Component} from 'react'
 import TailSpin from 'react-loader-spinner'
 import Header from '../Header'
-import Course from '../Course'
 import './index.css'
 
-export default class Home extends Component {
-  state = {isLoading: true, isFailed: false, isSuccess: false, coursesList: []}
+export default class CourseItemDetails extends Component {
+  state = {isLoading: true, isFailed: false, isSuccess: false, ItemDetails: {}}
 
   componentDidMount() {
-    this.fetchApiDetails()
+    this.fetchCourseDetails()
   }
 
-  fetchApiDetails = async () => {
-    const response = await fetch('https://apis.ccbp.in/te/courses')
+  fetchCourseDetails = async () => {
+    const {match} = this.props
+    const {params} = match
+    const {id} = params
+    console.log(id)
+    const response = await fetch(`https://apis.ccbp.in/te/courses/${id}`)
     const data = await response.json()
-    console.log(data)
     if (response.ok) {
-      const updatedData = data.courses.map(each => ({
-        id: each.id,
-        logoUrl: each.logo_url,
-        name: each.name,
-      }))
+      const updatedData = {
+        description: data.course_details.description,
+        id: data.course_details.id,
+        name: data.course_details.name,
+        imageUrl: data.course_details.image_url,
+      }
+      console.log(data)
       console.log(updatedData)
       this.setState({
         isLoading: false,
         isSuccess: true,
         isFailed: false,
-        coursesList: updatedData,
+        ItemDetails: updatedData,
       })
     } else {
       this.setState({isLoading: false, isSuccess: false, isFailed: true})
@@ -34,7 +38,8 @@ export default class Home extends Component {
   }
 
   render() {
-    const {isLoading, isSuccess, isFailed, coursesList} = this.state
+    const {isLoading, isFailed, isSuccess, ItemDetails} = this.state
+    const {description, name, imageUrl} = ItemDetails
     return (
       <div>
         <Header />
@@ -46,6 +51,7 @@ export default class Home extends Component {
                 width="80"
                 color="#4fa94d"
                 ariaLabel="tail-spin-loading"
+                font-family="Roboto"
                 radius="1"
                 wrapperStyle={{}}
                 wrapperClass=""
@@ -53,13 +59,14 @@ export default class Home extends Component {
             </div>
           )}
           {isSuccess && (
-            <div>
-              <h1>Courses</h1>
-              <ul>
-                {coursesList.map(each => (
-                  <Course key={each.id} details={each} />
-                ))}
-              </ul>
+            <div className="itemDetails">
+              <div>
+                <img src={imageUrl} alt={name} />
+              </div>
+              <div>
+                <h1>{name}</h1>
+                <p>{description}</p>
+              </div>
             </div>
           )}
           {isFailed && (
@@ -73,7 +80,7 @@ export default class Home extends Component {
               <h1>Oops! Something Went Wrong</h1>
               <p>We cannot seem to find the page you are looking for</p>
               <div>
-                <button type="button" onClick={this.fetchApiDetails}>
+                <button type="button" onClick={this.fetchCourseDetails}>
                   Retry
                 </button>
               </div>
